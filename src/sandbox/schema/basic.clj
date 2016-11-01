@@ -9,8 +9,8 @@
   {:firstName s/Str
    :lastName s/Str})
 
+(s/explain user)
 
 (s/validate
   user {:firstName "Christopher"
         :lastName "Town"})
-
