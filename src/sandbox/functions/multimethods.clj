@@ -1,7 +1,10 @@
-(ns sandbox.multimethods)
+(ns sandbox.functions.multimethods)
+
+; types
 
 
 (def basic-type {:one :two})
+
 
 ; -----------------------------------------------------------------------------
 ; basic multimethod
@@ -40,8 +43,6 @@
 
 ; -----------------------------------------------------------------------------
 ; complex multimethod config
-
-(def multi-config)
 
 (defmulti do-config basic-type)
 
