@@ -1,9 +1,8 @@
-(ns sandbox.functions.multimethods)
+(ns sandbox.functions.multimethods
+  (:require [clojure.test :as test]))
 
-; types
 
-
-(def basic-type {:one :two})
+(def basic-type #{:one :two})
 
 
 ; -----------------------------------------------------------------------------
@@ -13,43 +12,59 @@
 (defmulti do-basic basic-type)
 
 (defmethod do-basic :one
-  []
-  (println ["one"]))
+  [keyword]
+  (name keyword))
 
 (defmethod do-basic :two
-  []
-  (println ["two"]))
+  [keyword]
+  (name keyword))
+
+(test/testing "basic multimethod"
+    (test/is (= "one" (do-basic :one)))
+    (test/is (= "two" (do-basic :two))))
 
 
 ; -----------------------------------------------------------------------------
 ; calulated multimethod
 
 (def calculated-type
-  (fn [typename]
+  (fn [keyword]
     (cond
-      (= typename "one") :one
-      (= typename "two") :two)))
+      (= keyword "one") :one
+      (= keyword "two") :two)))
 
 (defmulti do-calculated calculated-type)
 
 (defmethod do-calculated :one
-  []
-  (println "one"))
+  [keyword]
+  (name keyword))
 
 (defmethod do-calculated :two
-  []
-  (println "two"))
+  [keyword]
+  (name keyword))
+
+(test/testing "calculated multimethod"
+  (test/is (= "one" (do-calculated "one"))))
 
 
 ; -----------------------------------------------------------------------------
-; complex multimethod config
+; multimethod with overload
 
-(defmulti do-config basic-type)
+(def overload-type-fn
+  (fn [keyword config]
+    (cond
+      (= keyword "one") :one
+      (= keyword "two") :two)))
 
-(defmethod do-config :one
-  [basic-type multi-config]
-  (println basic-type multi-config))
+(defmulti do-overload overload-type-fn)
 
-(defmethod do-config :two
-  [basic-type multi-config]
-  (println basic-type multi-config))
+(defmethod do-overload :one
+  [keyword config]
+  (str config))
+
+(defmethod do-overload :two
+  [keyword config]
+  (str config))
+
+(test/testing "overload multimethod"
+  (test/is (= "config" (do-overload "one" "config"))))
